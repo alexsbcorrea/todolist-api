@@ -10,7 +10,7 @@ const port = process.env.PORT || 3001;
 
 app.use(express.json());
 
-app.use(cors({ credentials: true, origin: process.env.AP_FRONT }));
+app.use(cors({ credentials: true, origin: "*" }));
 
 app.use(express.static("public"));
 
