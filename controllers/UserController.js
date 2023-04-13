@@ -14,7 +14,7 @@ module.exports = class UserController {
       acceptterms,
     } = req.body;
 
-    const checkUser = await UserModel.findAll({ where: { email: email } });
+    const checkUser = await UserModel.findOne({ where: { email: email } });
 
     if (checkUser.email) {
       res.status(422).json({
