@@ -16,7 +16,7 @@ module.exports = class UserController {
 
     const checkUser = await UserModel.findOne({ where: { email: email } });
 
-    if (checkUser.email) {
+    if (checkUser) {
       res.status(422).json({
         message: "E-mail inválido, insira outro e-mail para continuar.",
       });
