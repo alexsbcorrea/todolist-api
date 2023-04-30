@@ -11,7 +11,7 @@ começar.
 integrando Banco de Dados PostgreSQL com o ORM Sequelize.
 
 <strong>Documentação</strong>: API documentada utilizando o Swagger UI Express.<br>
-<strong>URL</strong>:https://vast-ruby-magpie-suit.cyclic.app/docs<br>
+<strong>URL</strong>: https://vast-ruby-magpie-suit.cyclic.app/docs<br>
 
 <strong>Principais Bibliotecas</strong>:<br>
 Express (Servidor)<br>
