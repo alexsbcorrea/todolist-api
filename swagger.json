@@ -1,0 +1,965 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API para Aplicação de Lista de Tarefas (Projeto To Do List)",
+    "description": "Essa API tem como objetivo gerenciar todo o fluxo da aplicação: Gerencimento de Usuário e de Tarefas.",
+    "contact": {
+      "name": "Alex Sandro Belfort Corrêa",
+      "email": "alex.sandro_as@hotmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://vast-ruby-magpie-suit.cyclic.app/",
+      "description": "API de Producação"
+    },
+    {
+      "url": "http://localhost:5000/",
+      "description": "API de Testes"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Rota de Status da API",
+        "description": "Rota checar o status da API",
+        "tags": ["service"],
+
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Service-Operation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "Novo Usuário",
+        "description": "Rota para cadastro de usuário",
+        "tags": ["users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/NewUser"
+              },
+              "examples": {
+                "Novo Usuário": {
+                  "value": {
+                    "firstname": "Alex",
+                    "lastname": "Corrêa",
+                    "email": "alex.sandro_as@hotmail.com",
+                    "password": "teste@1234",
+                    "confirmPassword": "teste@1234",
+                    "acceptterms": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-NewUser-Login"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "Login do Usuário",
+        "description": "Rota para login de usuário",
+        "tags": ["users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              },
+              "examples": {
+                "Login do Usuário": {
+                  "value": {
+                    "email": "alex.sandro_as@hotmail.com",
+                    "password": "teste@1234"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-NewUser-Login"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "summary": "Informações do Usuário",
+        "description": "Rota para retornar informações do usuário via decodificação do Token.",
+        "tags": ["users"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-Profile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/edit/{id}": {
+      "patch": {
+        "summary": "Atualizar Perfil do Usuário",
+        "description": "Rota para salvar alterações no perfil do usuário",
+        "tags": ["users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do Usuário",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ProfileUser"
+              },
+              "examples": {
+                "Alterar Usuário": {
+                  "value": {
+                    "firstname": "Alex",
+                    "lastname": "Corrêa",
+                    "email": "alex.sandro_as@hotmail.com",
+                    "password": "teste@1234",
+                    "confirmPassword": "teste@1234"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-Update-Profile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/changephoto/{id}": {
+      "patch": {
+        "summary": "Atualizar Foto de Perfil do Usuário",
+        "description": "Rota para alterar a Foto no Perfil do Usuário",
+        "tags": ["users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do Usuário",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              },
+              "examples": {
+                "Alterar Usuário": {
+                  "value": {
+                    "firstname": "Alex",
+                    "lastname": "Corrêa",
+                    "email": "alex.sandro_as@hotmail.com",
+                    "password": "teste@1234",
+                    "confirmPassword": "teste@1234"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-Change-Photo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/removeaccount/{id}": {
+      "delete": {
+        "summary": "Excluir Conta do Usuário",
+        "description": "Rota para o usuário logado excluir sua conta.",
+        "tags": ["users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do Usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-User-Operations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/create": {
+      "post": {
+        "summary": "Nova Tarefa",
+        "description": "Rota para criar nova Tarefa.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/NewTask"
+              },
+              "examples": {
+                "Novo Tarefa": {
+                  "value": {
+                    "description": "Reunião Semanal",
+                    "local": "Escritório",
+                    "date": "28/04/2023",
+                    "time": "08:00",
+                    "categorie": "Trabalho"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Tasks-Operations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/view/{id}": {
+      "get": {
+        "summary": "Obter Tarefa para Visualização/Edição",
+        "description": "Rota para obter os dados de uma Tarefa para visualização/edição.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do Tarefa",
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ViewTask"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/update": {
+      "patch": {
+        "summary": "Salvar Alterações na Tarefa",
+        "description": "Rota para salvar alterações em uma Tarefa.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UpdateTask"
+              },
+              "examples": {
+                "Atualizar Tarefa": {
+                  "value": {
+                    "description": "Reunião Semanal",
+                    "local": "Escritório",
+                    "date": "30/04/2023",
+                    "time": "16:00",
+                    "categorie": "Trabalho",
+                    "isClosed": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Tasks-Operations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/close/{id}": {
+      "patch": {
+        "summary": "Marcar Tarefa como Concluída",
+        "description": "Rota para alterar o status de uma Tarefa.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da Tarefa",
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Tasks-Operations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/open/{id}": {
+      "patch": {
+        "summary": "Marcar Tarefa como Pendente",
+        "description": "Rota para alterar o status de uma Tarefa.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da Tarefa",
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Tasks-Operations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/remove/{id}": {
+      "delete": {
+        "summary": "Excluir Tarefa",
+        "description": "Rota para excluir uma Tarefa.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da Tarefa",
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Tasks-Operations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/all": {
+      "get": {
+        "summary": "Obter Todas as Tarefas",
+        "description": "Rota para obter todas as Tarefas do usuário logado.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-Get-Tasks"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/pendings": {
+      "get": {
+        "summary": "Obter Todas as Tarefas Pendentes",
+        "description": "Rota para obter todas as Tarefas Pendentes do usuário logado.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-Get-Tasks"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/closeds": {
+      "get": {
+        "summary": "Obter Todas as Tarefas Concluídas",
+        "description": "Rota para obter todas as Tarefas Concluídas do usuário logado.",
+        "tags": ["tasks"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Response-Get-Tasks"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Responses-Service-Operation": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "NewUser": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "confirmPassword": {
+            "type": "string"
+          },
+          "acceptterms": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "ProfileUser": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "confirmPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "Response-NewUser-Login": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "Response-Profile": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "Response-Update-Profile": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "update": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "firstname": {
+                "type": "string"
+              },
+              "lastname": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "acceptterms": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Response-Change-Photo": {
+        "type": "object",
+        "properties": {
+          "message,": {
+            "type": "string"
+          },
+          "image,": {
+            "type": "string"
+          }
+        }
+      },
+      "Responses-User-Operations": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "NewTask": {
+        "type": "object",
+        "properties": {
+          "description,": {
+            "type": "string"
+          },
+          "local,": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          },
+          "categorie": {
+            "type": "string"
+          }
+        }
+      },
+      "ViewTask": {
+        "type": "object",
+        "properties": {
+          "task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "description": {
+                "type": "string"
+              },
+              "local": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              },
+              "time": {
+                "type": "string"
+              },
+              "categorie": {
+                "type": "string",
+                "enum": ["Trabalho", "Pessoal", "Outros"]
+              },
+              "isClosed": {
+                "type": "boolean"
+              },
+              "idUser": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "UpdateTask": {
+        "type": "object",
+        "properties": {
+          "description,": {
+            "type": "string"
+          },
+          "local,": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          },
+          "categorie": {
+            "type": "string"
+          },
+          "isClosed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Responses-Tasks-Operations": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Response-Get-Tasks": {
+        "type": "object",
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "local": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "time": {
+                  "type": "string"
+                },
+                "categorie": {
+                  "type": "string"
+                },
+                "isClosed": {
+                  "type": "boolean"
+                },
+                "idUser": {
+                  "type": "integer"
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

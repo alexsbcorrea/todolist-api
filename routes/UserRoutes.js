@@ -22,5 +22,10 @@ router.patch(
   imageUpload.single("image"),
   UserController.ChangePhoto
 );
+router.delete(
+  "/removeaccount/:id",
+  TokenValidation,
+  UserController.RemoveAccount
+);
 
 module.exports = router;

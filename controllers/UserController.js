@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const fs = require("fs");
 const UserModel = require("../models/User");
+const TaskModel = require("../models/Task");
 const { GenerateToken } = require("../helpers/Token");
 
 module.exports = class UserController {
@@ -13,6 +14,13 @@ module.exports = class UserController {
       confirmPassword,
       acceptterms,
     } = req.body;
+
+    if (!email) {
+      res.status(422).json({
+        message: "O E-mail é obrigatório",
+      });
+      return;
+    }
 
     const checkUser = await UserModel.findOne({ where: { email: email } });
 
@@ -60,7 +68,7 @@ module.exports = class UserController {
         acceptterms,
       });
       const token = GenerateToken(Register, req, res);
-      res.status(200).json({
+      res.status(201).json({
         message: "Registro e Login realizado com sucesso.",
         user: Register.firstname,
         email: Register.email,
@@ -77,6 +85,11 @@ module.exports = class UserController {
   }
   static async Login(req, res) {
     const { email, password } = req.body;
+
+    if (!email) {
+      res.status(422).json({ message: "O E-mail é obrigatório." });
+      return;
+    }
 
     const CheckUser = await UserModel.findOne({ where: { email: email } });
 
@@ -120,6 +133,13 @@ module.exports = class UserController {
     const id = req.userId;
 
     const idEdit = req.params.id;
+
+    if (!idEdit) {
+      res.status(422).json({
+        message: "O ID é obrigatório.",
+      });
+      return;
+    }
 
     if (id != idEdit) {
       res.status(401).json({
@@ -203,6 +223,13 @@ module.exports = class UserController {
 
     const idEdit = req.params.id;
 
+    if (!idEdit) {
+      res.status(422).json({
+        message: "O ID é obrigatório.",
+      });
+      return;
+    }
+
     if (id != idEdit) {
       res.status(401).json({
         message:
@@ -252,6 +279,52 @@ module.exports = class UserController {
       res.status(500).json({
         message: "Falha ao alterar foto de perfil. Tente novamente mais tarde.",
         error,
+      });
+      return;
+    }
+  }
+  static async RemoveAccount(req, res) {
+    const id = req.userId;
+
+    const idEdit = req.params.id;
+
+    if (!idEdit) {
+      res.status(422).json({
+        message: "O ID é obrigatório.",
+      });
+      return;
+    }
+
+    if (id != idEdit) {
+      res.status(401).json({
+        message:
+          "Acesso negado. Não é possível remover a conta de outro usuário.",
+      });
+      return;
+    }
+
+    const TasksToRemove = await TaskModel.findAll({ where: { idUser: id } });
+
+    if (TasksToRemove) {
+      await TaskModel.destroy({ where: { idUser: id } });
+      console.log("Tarefas removidas com sucesso.");
+      await UserModel.destroy({ where: { id: id } });
+    } else {
+      console.log("Nâo há Tarefas para remover.");
+      await UserModel.destroy({ where: { id: id } });
+    }
+
+    const UserInfo = await UserModel.findOne({ where: { id: id } });
+
+    if (!UserInfo) {
+      res.status(200).json({
+        message: "Conta excluída com sucesso.",
+      });
+      return;
+    } else {
+      res.status(500).json({
+        message:
+          "Falha ao excluir Conta de Usuário. Tente novamente mais tarde.",
       });
       return;
     }

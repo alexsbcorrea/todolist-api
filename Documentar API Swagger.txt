@@ -1,0 +1,16 @@
+01 -  Instale o Swagger
+npm i swagger-ui-express
+
+Caso esteja utilizando Typescript é necessári adicionar também os types: 
+
+02 - Import o Swagger dentro do index.js
+const swaggerUi = require("swagger-ui-express");
+
+03 - Crie um arquivo chamado "swagger.json".
+Para Typescript defina o resolveJsonModule como true.
+
+04 - Importe o "swagger.json" no index.js
+const swaggerDoc = require("./swagger.json");
+
+04 - Crie um Middleware para indicar em qual rota a documentação estará disponível.
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
