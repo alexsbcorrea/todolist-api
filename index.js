@@ -22,7 +22,7 @@ app.use(express.static("public"));
 
 app.use("/users", UserRoutes);
 app.use("/tasks", TaskRoutes);
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({
     message: "Aplicação Rodando",
   });

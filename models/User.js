@@ -29,6 +29,9 @@ const Usuario = db.sequelize.define(
     image: {
       type: db.Sequelize.STRING,
     },
+    imageId: {
+      type: db.Sequelize.STRING,
+    },
   },
   {
     timestamps: true,

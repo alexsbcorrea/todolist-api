@@ -1,8 +1,13 @@
 const bcrypt = require("bcryptjs");
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+const stream = require("stream");
 const UserModel = require("../models/User");
 const TaskModel = require("../models/Task");
 const { GenerateToken } = require("../helpers/Token");
+
+const GDriveUploadFile = require("../google-drive").GDriveUploadFile;
+const GDriveRemoveFile = require("../google-drive").GDriveRemoveFile;
 
 module.exports = class UserController {
   static async Register(req, res) {
@@ -73,6 +78,7 @@ module.exports = class UserController {
         user: Register.firstname,
         email: Register.email,
         image: Register.image,
+        imageId: Register.imageId,
         token: token,
       });
       return;
@@ -105,6 +111,7 @@ module.exports = class UserController {
         user: CheckUser.firstname,
         email: CheckUser.email,
         image: CheckUser.image,
+        imageId: CheckUser.imageId,
         token: token,
       });
       return;
@@ -149,10 +156,7 @@ module.exports = class UserController {
       return;
     }
 
-    const User = UserModel.findByPk(id);
-
     const { firstname, lastname, email } = req.body;
-    let { password, confirmPassword } = req.body;
 
     if (!firstname) {
       res.status(422).json({
@@ -168,28 +172,11 @@ module.exports = class UserController {
       return;
     }
 
-    let image = "";
-    if (req.file) {
-      image = `${req.file.filename}`;
-    }
-
-    if (password != confirmPassword) {
-      res.status(422).json({
-        message: "Senhas não correspondem.",
-      });
-      return;
-    }
-
-    if (!password && !confirmPassword) {
-      password = User.password;
-    }
-
     try {
       const Update = UserModel.update(
         {
           firstname,
           lastname,
-          password,
         },
         { where: { id: id } }
       );
@@ -202,20 +189,95 @@ module.exports = class UserController {
         message: "Registro atualizado com sucesso.",
         update: UpdateUser,
       });
-      return;
     } catch (error) {
-      fs.unlink(`../public/img/users/${image}`, (erro) => {
-        if (erro) {
-          console.log("Falha ao excluir o arquivo");
-        } else {
-          console.log("Arquivo excluído com sucesso");
-        }
-      });
       res.status(500).json({
         message: "Falha ao atualizar cadastro. Tente novamente mais tarde.",
         error,
       });
+    }
+  }
+  static async ChangePassword(req, res) {
+    const id = req.userId;
+
+    const idEdit = req.params.id;
+
+    if (!idEdit) {
+      res.status(422).json({
+        message: "O ID é obrigatório.",
+      });
       return;
+    }
+
+    if (id != idEdit) {
+      res.status(401).json({
+        message:
+          "Acesso negado. Não é possível alterar informações de outro usuário.",
+      });
+      return;
+    }
+
+    const User = await UserModel.findByPk(id);
+
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    let password = "";
+
+    if (!currentPassword) {
+      res.status(422).json({
+        message: "A Senha Atual é obrigatória.",
+      });
+      return;
+    }
+
+    if (!newPassword) {
+      res.status(422).json({
+        message: "A Nova Senha é obrigatória.",
+      });
+      return;
+    }
+
+    if (!confirmPassword) {
+      res.status(422).json({
+        message: "A Confirmação de Senha é obrigatória.",
+      });
+      return;
+    }
+
+    if (currentPassword != User.password) {
+      res.status(422).json({
+        message: "A Senha (Atual) fornecida está incorreta.",
+      });
+      return;
+    }
+
+    if (newPassword != confirmPassword) {
+      res.status(422).json({
+        message: "A Nova Senha e a Confirmação não correspondem.",
+      });
+      return;
+    }
+
+    if (currentPassword == User.password && newPassword == confirmPassword) {
+      password = newPassword;
+    } else {
+      password = User.password;
+    }
+
+    try {
+      const UserUpdate = await UserModel.update(
+        { password },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      res.status(200).json({ message: "Senha alterada com sucesso." });
+    } catch (error) {
+      res.status(500).json({
+        message:
+          "Não foi possível alterar a senha devido erro interno. Tente novamnente mais tarde.",
+      });
     }
   }
   static async ChangePhoto(req, res) {
@@ -238,50 +300,54 @@ module.exports = class UserController {
       return;
     }
 
-    const User = await UserModel.findByPk(id);
+    const typeFile = "image";
+    const sizeFile = req.file.size;
+    const fileSizeLimit = 1 * 1024 * 1024;
 
-    let image = "";
-    if (req.file) {
-      image = `${req.file.filename}`;
-    }
-
-    try {
-      await UserModel.update(
-        {
-          image,
-        },
-        { where: { id: id } }
-      );
-
-      fs.unlink(`../img/users/${User.image}`, (erro) => {
-        if (erro) {
-          console.log("Falha ao excluir o arquivo");
-        } else {
-          console.log("Arquivo excluído com sucesso");
-        }
-      });
-
-      const UserPhoto = await UserModel.findByPk(id);
-
-      res.status(200).json({
-        message: "Foto atualizada com sucesso.",
-        image: UserPhoto.image,
-      });
-      return;
-    } catch (error) {
-      fs.unlink(`../public/img/users/${image}`, (erro) => {
-        if (erro) {
-          console.log("Falha ao excluir o arquivo");
-        } else {
-          console.log("Arquivo excluído com sucesso");
-        }
-      });
-      res.status(500).json({
-        message: "Falha ao alterar foto de perfil. Tente novamente mais tarde.",
-        error,
+    if (req.file.mimetype.split("/")[0] != typeFile) {
+      res.status(422).json({
+        message:
+          "O arquivo enviado não é uma imagem. Somente arquivos de imagem são permitidos.",
       });
       return;
     }
+
+    if (req.file.size > fileSizeLimit) {
+      res.status(422).json({
+        message:
+          "O arquivo enviado excedeu o limite permitido de 1 MB. Envie outro arquivo que atenda os requisitos.",
+      });
+      return;
+    }
+
+    const UserInfo = await UserModel.findByPk(id);
+
+    let pathFile = req.file;
+    let bufferStream = new stream.PassThrough();
+
+    bufferStream.end(pathFile.buffer);
+    const newFileName = `${uuidv4()}-${req.file.originalname}`;
+    const mimetype = req.file.mimetype;
+
+    GDriveUploadFile(bufferStream, newFileName, mimetype)
+      .then((data) => {
+        GDriveRemoveFile(UserInfo.imageId);
+        const image = newFileName;
+        const imageId = data;
+        UserModel.update({ image, imageId }, { where: { id: id } }).then(() => {
+          res.status(200).json({
+            message: "Foto de Perfil atualizada com sucesso.",
+            image: image,
+            imageId: imageId,
+          });
+        });
+      })
+      .catch(() => {
+        res.status(500).json({
+          message:
+            "Falha ao atualizar foto de Perfil. Tente novamente mais tarde.",
+        });
+      });
   }
   static async RemoveAccount(req, res) {
     const id = req.userId;

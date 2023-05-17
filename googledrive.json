@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "api-todolist-385512",
+  "private_key_id": "29c4d3b7dd64daab499cfd98c0cf03c0450e4bda",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCTXzBuQSc71UXP\nL0QpeTOxRvUwiSyfABPiBhvj9WvckLkZQ2PexjBRJJgIxFPQ5stAPL514DbOZGW0\nOtsYANuyuqCwwjqUpD3NxYFJgSTvBPgSWbBtW7CMCxb6C6jv5ioUKiUuRLg0ihMD\n23U84OYPQb5iv3yeEcrGAC7gpxt7Byp9D2GtgcUFhpuPtnxCKJT6WBgpjiDGAi3z\n01Krynu+SswTF0zz8LfPEFQsA8PH8quBHCwSkLB/jDfjneVjDLOPZEL3VRezdbp4\ncYikng8U/S3wrPsvsWXn+NEFCnpH/klNGOVlrOrLdb3xOdoLgoC74fXRf+4WJ6Un\nCayn7SXFAgMBAAECggEAGioey5xmrlFNrRybse9SVame84iPMwWNAiaKghz7EvRg\n4JLd4tn2Dxn7oibVKLQpJtUCDaSKpncdtXNznZ3dY6yNxgQd6XEFhgiITTgQCh2s\nO3nQAIJ0ZFC9uhQi4MDQ/LaE1mOd/rn66Ubn2DCnt9K4zghoRBotkZzLtdgFYYCd\nq/cOJZ/JBe30EOw//haYXvUQDzIZYihL23tiXV9yQtGULpNp/aIS9KRRp4swlgZ7\nLF0maqag27lKFqIXvHvJS+0yg0d21G/n/aIg0OtiwngjHTb7nrW2XdHWcq8Vyxb1\nn/Vqa+iGVfqBXp/pEXiwVKxmk8ynR2nwA+jo3XIVAQKBgQDKUIjad0RvW3oT+ycW\nq03FRor8L1MENIxlar6nR8xgJWhutcb6FOhz9xw6/u118869tkV4bpVxbSzCaBNd\no6gYf63PgFASAIM1iEM4cXJW4tdiY6z+3VmSzzPpKFsA8T/G8D6geIo1ovGoAsbS\nqa+uoCFivfAkfqEPm6ujXZJmRQKBgQC6elRLxUBvAWKLixetQ14bYwYPZdkxC8vU\n1tnoEMDrFrnhtkDVRhvHTG9jk+HWmNsABiuDCEZe6VCI8dnWiKcFwOzL4QYkVqUy\nNhEE65WCq0p4UmV+ab7YduYOaI9ildbcPb3NQJbFmrrcsPtKrT1NT0DC8pN+NnuV\nvBpD5R15gQKBgBQ8R+PqB/tHYAd9mGRJEAdKTf55UUlbZCuEqLsckFGRjEd+gP9k\ndfebYMR52RByKVyKTZqFHQdyTwbG2CEGjHqe0qitgdS7HmSNU4PivPf5ymc55wS6\n6QmpFd0dPzTx7Foej3UHeXNx78/JL0/EzyCdPZmdu9Y6oCtqe5lkc48tAoGBAIRS\nWY6KoXYjXXH3eQ2RSC3Wzm4Or1eGL1UQP//UI5Ctx6jKUqcD4KJDMqdOQGqufHg/\n6JBKRuUCWgtS0mjQ/vOuOllRi7ItaXt/sgPzx1u5gFZw4WQaVTn05LpEp7ok6RnP\nFeeXdWUyrnX7f9U1qNI68pFi4BYnQvq1R032PjwBAoGBAKK0j6Ly7sYDgm8x1TRG\ntJ5wril8Icdwd13Yc/fBCXpTw16bpILX/JC5Y/jnedg7VLiMLCcaornuVPM/yDTc\nTHWjDs4zUsA+zOZ88i3dxWChcZq+kRvU5sU7GuGhEZ1uzxKB4q+YWW8kr/iqMezk\nImB7HcdUjc4EtihewfA2qiJT\n-----END PRIVATE KEY-----\n",
+  "client_email": "conta-todolist-upload@api-todolist-385512.iam.gserviceaccount.com",
+  "client_id": "110038394504577367211",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/conta-todolist-upload%40api-todolist-385512.iam.gserviceaccount.com"
+}
