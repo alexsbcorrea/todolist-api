@@ -133,6 +133,7 @@ module.exports = class UserController {
         lastname: user.lastname,
         email: user.email,
         image: user.image,
+        imageId: user.imageId,
       });
     }
   }
