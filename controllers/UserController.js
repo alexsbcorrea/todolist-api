@@ -332,9 +332,12 @@ module.exports = class UserController {
 
     GDriveUploadFile(bufferStream, newFileName, mimetype)
       .then((data) => {
-        GDriveRemoveFile(UserInfo.imageId);
+        GDriveRemoveFile(UserInfo.imageId)
+          .then(() => console.log("Imagem Excluída"))
+          .catch((error) => console.log("Não foi possível excluir a imagem"));
         const image = newFileName;
         const imageId = data;
+        console.log(data);
         UserModel.update({ image, imageId }, { where: { id: id } }).then(() => {
           res.status(200).json({
             message: "Foto de Perfil atualizada com sucesso.",
