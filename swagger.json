@@ -27,8 +27,8 @@
         "tags": ["service"],
 
         "responses": {
-          "500": {
-            "description": "Internal Server Error"
+          "404": {
+            "description": "Not Found"
           },
           "200": {
             "description": "OK",
@@ -191,9 +191,7 @@
                   "value": {
                     "firstname": "Alex",
                     "lastname": "Corrêa",
-                    "email": "alex.sandro_as@hotmail.com",
-                    "password": "teste@1234",
-                    "confirmPassword": "teste@1234"
+                    "email": "alex.sandro_as@hotmail.com"
                   }
                 }
               }
@@ -217,6 +215,64 @@
                 "schema": {
                   "type": "object",
                   "$ref": "#/components/schemas/Response-Update-Profile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/changepassword/{id}": {
+      "patch": {
+        "summary": "Alterar Senha do Usuário",
+        "description": "Rota para alterar a Senha do usuário",
+        "tags": ["users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do Usuário",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/PasswordUser"
+              },
+              "examples": {
+                "Alterar Senha": {
+                  "value": {
+                    "currentPassword": "1234@Ae5678",
+                    "newPassword": "8765@Ae4321",
+                    "confirmPassword": "8765@Ae4321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-User-ChangePassword"
                 }
               }
             }
@@ -710,8 +766,16 @@
           },
           "email": {
             "type": "string"
+          }
+        }
+      },
+      "PasswordUser": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string"
           },
-          "password": {
+          "newPassword": {
             "type": "string"
           },
           "confirmPassword": {
@@ -732,6 +796,9 @@
             "type": "string"
           },
           "image": {
+            "type": "string"
+          },
+          "imageId": {
             "type": "string"
           },
           "token": {
@@ -758,6 +825,9 @@
             "type": "string"
           },
           "image": {
+            "type": "string"
+          },
+          "imageId": {
             "type": "string"
           }
         }
@@ -789,6 +859,9 @@
               "image": {
                 "type": "string"
               },
+              "imageId": {
+                "type": "string"
+              },
               "createdAt": {
                 "type": "string"
               },
@@ -807,10 +880,21 @@
           },
           "image,": {
             "type": "string"
+          },
+          "imageId,": {
+            "type": "string"
           }
         }
       },
       "Responses-User-Operations": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Responses-User-ChangePassword": {
         "type": "object",
         "properties": {
           "message": {
