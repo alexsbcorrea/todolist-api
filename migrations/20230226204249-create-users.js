@@ -26,6 +26,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       acceptterms: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

@@ -23,6 +23,9 @@ const Usuario = db.sequelize.define(
     password: {
       type: db.Sequelize.STRING,
     },
+    code: {
+      type: db.Sequelize.STRING,
+    },
     acceptterms: {
       type: db.Sequelize.BOOLEAN,
     },

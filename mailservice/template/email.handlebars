@@ -1,0 +1,29 @@
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+  </head>
+  <body>
+    <style>
+      body { margin: 0; padding: 0; } .container { width: 100%; height: 100%;
+      border: 1px solid gray; font-family: "Segoe UI", Tahoma, Geneva, Verdana,
+      sans-serif; padding: 2rem; } .container .notice { font-size: 1rem; } h1 {
+      font-size: 1.5rem; } .code { margin-top: -5px; font-size: 1.5rem;
+      font-weight: 700; }
+    </style>
+    <main class="container">
+      <div>
+        <h1 class="title">{{title}}</h1>
+      </div>
+      <div>
+        <p class="text">Olá
+          {{name}}, recebemos uma solicitação para Redefinição de Senha.</p>
+        <p class="text">Utilize o código abaixo para criar uma nova senha.</p>
+        <p class="code">{{code}}</p>
+        <p class="notice">Caso não tenha sido você, por favor desconsidere esta
+          mensagem e verifique se o acesso à sua conta não foi comprometido.</p>
+      </div>
+    </main>
+  </body>
+</html>

@@ -22,6 +22,8 @@ router.patch(
   TokenValidation,
   UserController.ChangePassword
 );
+router.patch("/recoverpassword", UserController.GetRecoverPassword);
+router.patch("/setnewpassword", UserController.SetNewPassword);
 router.patch(
   "/changephoto/:id",
   TokenValidation,

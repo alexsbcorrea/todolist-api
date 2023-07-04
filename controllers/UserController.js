@@ -9,6 +9,8 @@ const { GenerateToken } = require("../helpers/Token");
 const GDriveUploadFile = require("../google-drive").GDriveUploadFile;
 const GDriveRemoveFile = require("../google-drive").GDriveRemoveFile;
 
+const Email = require("../mailservice");
+
 module.exports = class UserController {
   static async Register(req, res) {
     const {
@@ -279,6 +281,98 @@ module.exports = class UserController {
         message:
           "Não foi possível alterar a senha devido erro interno. Tente novamnente mais tarde.",
       });
+    }
+  }
+  static async GetRecoverPassword(req, res) {
+    const { email } = req.body;
+
+    const checkUser = await UserModel.findOne({ where: { email } });
+
+    if (!checkUser) {
+      res.status(404).json({ message: "Usuário não encontrado." });
+      return;
+    }
+
+    const code = `${checkUser.firstname.slice(0, 1)}${checkUser.lastname.slice(
+      0,
+      1
+    )}${Math.floor(Math.random() * (999999 - 100000 + 1) + 100000)}`;
+    console.log(code);
+
+    try {
+      const setCode = await UserModel.update(
+        { code: code },
+        { where: { email } }
+      );
+
+      const getCode = await UserModel.findOne({ where: { email } });
+
+      const to = getCode.email;
+      const title = "Recuperação de Senha";
+      const name = getCode.firstname;
+      const subject = "Suporte ToDoList - Esqueceu a Senha";
+      const codeUser = getCode.code;
+
+      const SendMail = new Email(to, title, name, subject, codeUser);
+
+      SendMail.Send();
+      res.status(200).json({ message: "Email enviado" });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ message: "Erro interno, tente novamente mais tarde." });
+    }
+  }
+  static async SetNewPassword(req, res) {
+    const { code, newPassword, confirmPassword } = req.body;
+
+    if (!code) {
+      res.status(422).json({
+        message: "O Código é obrigatório.",
+      });
+      return;
+    }
+    if (!newPassword) {
+      res.status(422).json({
+        message: "A Nova Senha é obrigatória.",
+      });
+      return;
+    }
+
+    if (!confirmPassword) {
+      res.status(422).json({
+        message: "A Confirmação de Senha é obrigatória.",
+      });
+      return;
+    }
+
+    const checkUser = await UserModel.findOne({ where: { code } });
+
+    if (!checkUser) {
+      res.status(404).json({
+        message: "Código inválido.",
+      });
+      return;
+    }
+
+    if (newPassword != confirmPassword) {
+      res.status(422).json({
+        message: "A Nova Senha e Confirmação não correspondem.",
+      });
+      return;
+    } else {
+      const updateUser = await UserModel.update(
+        {
+          password: newPassword,
+          code: "nocode",
+        },
+        { where: { id: checkUser.id } }
+      );
+      res.status(200).json({
+        message: "Senha alterada com sucesso.",
+      });
+      return;
     }
   }
   static async ChangePhoto(req, res) {
