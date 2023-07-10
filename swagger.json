@@ -280,6 +280,100 @@
         }
       }
     },
+    "/users/recoverpassword": {
+      "patch": {
+        "summary": "Solicitação de Código por E-mail para Recuperação de Senha",
+        "description": "Rota para recuperação de senha do usuário",
+        "tags": ["users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecoveryPassword"
+              },
+              "examples": {
+                "Recuperação de Senha": {
+                  "value": {
+                    "email": "alex.sandro_as@hotmail.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Service-Operation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/setnewpassword": {
+      "patch": {
+        "summary": "Alteração de Senha do Usuário com Código enviado por E-mail",
+        "description": "Rota para alteração de senha do usuário",
+        "tags": ["users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "aplication/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPasswordUser"
+              },
+              "examples": {
+                "Alteração de Senha": {
+                  "value": {
+                    "code": "XX302123",
+                    "newPassword": "123456789",
+                    "confirmPassword": "123456789"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Responses-Service-Operation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users/changephoto/{id}": {
       "patch": {
         "summary": "Atualizar Foto de Perfil do Usuário",
@@ -773,6 +867,28 @@
         "type": "object",
         "properties": {
           "currentPassword": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          },
+          "confirmPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "RecoveryPassword": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "SetPasswordUser": {
+        "type": "object",
+        "properties": {
+          "code": {
             "type": "string"
           },
           "newPassword": {
