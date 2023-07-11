@@ -316,7 +316,9 @@ module.exports = class UserController {
       const SendMail = new Email(to, title, name, subject, codeUser);
 
       SendMail.Send();
-      res.status(200).json({ message: "Email enviado" });
+      setTimeout(() => {
+        res.status(200).json({ message: "Email enviado" });
+      }, 4000);
     } catch (error) {
       console.log(error);
       res
